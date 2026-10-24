@@ -13,18 +13,29 @@ $installFolder = Join-Path $env:LOCALAPPDATA 'Madium Manager'
 $startMenuFolder = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\Madium Manager'
 
 function Get-MadiumInstallation {
+    $uninstallPaths = @(
+        'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*',
+        'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*',
+        'HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*'
+    )
+
     return @(
-        Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' -ErrorAction SilentlyContinue |
-            Where-Object { $_.DisplayName -eq $displayName }
+        foreach ($path in $uninstallPaths) {
+            Get-ItemProperty $path -ErrorAction SilentlyContinue |
+                Where-Object { $_.DisplayName -eq $displayName }
+        }
     )
 }
 
 function Invoke-MsiExec {
     param([Parameter(Mandatory = $true)][string[]]$Arguments)
 
-    $process = Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $Arguments -Wait -PassThru
+    $script:lastMsiLog = Join-Path $env:RUNNER_TEMP "MadiumManager-$([guid]::NewGuid()).log"
+    $loggedArguments = $Arguments + @('/L*v', "`"$script:lastMsiLog`"")
+    $process = Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $loggedArguments -Wait -PassThru
     if ($process.ExitCode -notin @(0, 3010)) {
-        throw "msiexec $($Arguments[0]) failed with exit code $($process.ExitCode)."
+        $logTail = (Get-Content $script:lastMsiLog -Tail 20 -ErrorAction SilentlyContinue) -join ' | '
+        throw "msiexec $($Arguments[0]) failed with exit code $($process.ExitCode). $logTail"
     }
 }
 
@@ -43,7 +54,9 @@ try {
     Invoke-MsiExec -Arguments @('/i', "`"$previous`"", '/qn', '/norestart')
     $oldEntries = @(Get-MadiumInstallation)
     if ($oldEntries.Count -ne 1) {
-        throw "Expected one previous installation, found $($oldEntries.Count)."
+        $folderExists = Test-Path (Join-Path $installFolder 'MadiumManager.exe')
+        $logTail = (Get-Content $script:lastMsiLog -Tail 20 -ErrorAction SilentlyContinue) -join ' | '
+        throw "Expected one previous installation, found $($oldEntries.Count). Executable exists: $folderExists. $logTail"
     }
     $oldProductCode = $oldEntries[0].PSChildName
     Write-Host "Previous ProductCode: $oldProductCode"
