@@ -120,10 +120,17 @@ jobs:
 
       - name: Test MSI upgrade and uninstall
         shell: pwsh
-        run: >-
-          & eng/Test-MsiLifecycle.ps1
-          -PreviousMsi "artifacts/upgrade-test/previous.msi"
-          -CurrentMsi "artifacts/MadiumManager-ci-win-x64.msi"
+        run: |
+          try {
+            & eng/Test-MsiLifecycle.ps1 `
+              -PreviousMsi "artifacts/upgrade-test/previous.msi" `
+              -CurrentMsi "artifacts/MadiumManager-ci-win-x64.msi"
+          }
+          catch {
+            $message = $_.Exception.Message -replace "`r?`n", " "
+            Write-Host "::error::$message"
+            exit 1
+          }
 
       - name: Upload portable package
         uses: actions/upload-artifact@v7
