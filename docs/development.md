@@ -24,7 +24,7 @@ MSI собирается после `publish`, поскольку WiX упако
 
 ```powershell
 dotnet build packaging/MadiumManager.Installer/MadiumManager.Installer.wixproj `
-  --configuration Release -p:MsiVersion=0.1.0 `
+  --configuration Release -p:MsiVersion=0.3.0 `
   -p:PublishDir="$PWD/artifacts/publish"
 ```
 

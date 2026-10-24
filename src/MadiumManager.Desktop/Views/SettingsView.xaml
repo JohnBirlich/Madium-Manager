@@ -68,8 +68,8 @@
                        Style="{StaticResource MutedText}"
                        TextWrapping="Wrap"
                        Text="Позволяет проверить UX и state machine без Medium и без процессов ОС. Все статусы, reconnect и события генерируются локально и явно помечены как демо." />
-            <Border Margin="0,15,0,0" Padding="12" Background="#40321B" CornerRadius="8">
-              <TextBlock Foreground="#F2BE5C"
+            <Border Margin="0,15,0,0" Padding="12" Background="#FFF4E0" CornerRadius="8">
+              <TextBlock Foreground="#A15C00"
                          FontSize="11"
                          TextWrapping="Wrap"
                          Text="Для реального запуска нужен документированный CLI/API контракт Medium. Текущая сборка не имитирует его наличие." />

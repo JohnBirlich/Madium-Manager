@@ -84,7 +84,7 @@ jobs:
         run: >-
           dotnet build packaging/MadiumManager.Installer/MadiumManager.Installer.wixproj
           --configuration Release
-          -p:MsiVersion=0.2.0
+          -p:MsiVersion=0.3.0
           "-p:PublishDir=$env:GITHUB_WORKSPACE\artifacts\publish"
 
       - name: Collect CI MSI

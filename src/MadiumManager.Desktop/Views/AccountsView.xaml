@@ -36,7 +36,7 @@
                   AlternationCount="2"
                   VerticalScrollBarVisibility="Auto">
           <DataGrid.AlternatingRowBackground>
-            <SolidColorBrush Color="#101B2C" />
+            <SolidColorBrush Color="#FAFBFC" />
           </DataGrid.AlternatingRowBackground>
           <DataGrid.Columns>
             <DataGridTemplateColumn Header="АККАУНТ" Width="2*">
@@ -134,7 +134,7 @@
         <StackPanel HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Visibility="{Binding HasAccounts, Converter={StaticResource InverseBooleanToVisibility}}">
-          <TextBlock HorizontalAlignment="Center" FontSize="36" Foreground="#52617A" Text="◎" />
+          <TextBlock HorizontalAlignment="Center" FontSize="36" Foreground="#94A3B8" Text="◎" />
           <TextBlock Margin="0,12,0,0" FontSize="18" Text="Пул аккаунтов пуст" />
           <Button Margin="0,16,0,0"
                   HorizontalAlignment="Center"
@@ -165,7 +165,7 @@
                      TextWrapping="Wrap"
                      Text="{Binding Note}" />
           <TextBlock Margin="0,7,0,0"
-                     Foreground="#F17886"
+                     Foreground="#C4324B"
                      FontSize="11"
                      TextWrapping="Wrap"
                      Visibility="{Binding LastError, Converter={StaticResource NonEmptyStringToVisibility}}"

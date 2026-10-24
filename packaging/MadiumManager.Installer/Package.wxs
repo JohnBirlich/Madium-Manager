@@ -5,8 +5,17 @@
            Version="$(var.MsiVersion)"
            UpgradeCode="BD3465D9-14FC-4F33-A6A0-41AA5F7621FF"
            Scope="perUser">
-    <MajorUpgrade DowngradeErrorMessage="A newer version of Madium Manager is already installed." />
+    <!-- A stable UpgradeCode + increasing Version replaces the old per-user
+         installation instead of leaving two Madium Manager copies side by side. -->
+    <MajorUpgrade Schedule="afterInstallValidate"
+                  DowngradeErrorMessage="A newer version of Madium Manager is already installed." />
     <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="MadiumManagerIcon" SourceFile="..\..\assets\branding\madium-manager.ico" />
+    <Property Id="ARPPRODUCTICON" Value="MadiumManagerIcon" />
+    <Property Id="ARPCOMMENTS" Value="Account and Medium process manager" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/JohnBirlich/Madium-Manager" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/JohnBirlich/Madium-Manager" />
 
     <Feature Id="MainFeature" Title="Madium Manager" Level="1">
       <ComponentGroupRef Id="ApplicationComponents" />
@@ -30,7 +39,15 @@
                     Directory="ApplicationProgramsFolder"
                     Name="Madium Manager"
                     Description="Account and Medium process manager"
-                    WorkingDirectory="INSTALLFOLDER" />
+                    WorkingDirectory="INSTALLFOLDER"
+                    Icon="MadiumManagerIcon" />
+          <Shortcut Id="MadiumManagerUninstall"
+                    Directory="ApplicationProgramsFolder"
+                    Name="Удалить Madium Manager"
+                    Description="Удалить Madium Manager с этого компьютера"
+                    Target="[System64Folder]msiexec.exe"
+                    Arguments="/x [ProductCode]"
+                    Icon="MadiumManagerIcon" />
         </File>
         <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
         <RemoveFolder Id="RemoveStartMenuFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
