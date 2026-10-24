@@ -25,22 +25,18 @@
   <Fragment>
     <ComponentGroup Id="ApplicationComponents" Directory="INSTALLFOLDER">
       <Component Id="MainExecutable" Guid="BB7DC4B4-3496-431A-A71B-E65F06BF9842">
-        <File Id="MadiumManagerExe"
-              Source="$(var.PublishDir)\MadiumManager.exe"
-              KeyPath="yes" />
-      </Component>
-
-      <Component Id="StartMenuShortcut"
-                 Directory="ApplicationProgramsFolder"
-                 Guid="868E57BC-1DC7-4ACB-86FB-619426DFEDE1">
-        <Shortcut Id="MadiumManagerStartMenu"
-                  Name="Madium Manager"
-                  Description="Account and Medium process manager"
-                  Target="[#MadiumManagerExe]"
-                  WorkingDirectory="INSTALLFOLDER" />
+        <File Id="MadiumManagerExe" Source="$(var.PublishDir)\MadiumManager.exe">
+          <Shortcut Id="MadiumManagerStartMenu"
+                    Directory="ApplicationProgramsFolder"
+                    Name="Madium Manager"
+                    Description="Account and Medium process manager"
+                    WorkingDirectory="INSTALLFOLDER" />
+        </File>
+        <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveStartMenuFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
         <RegistryValue Root="HKCU"
                        Key="Software\MadiumManager"
-                       Name="StartMenuShortcut"
+                       Name="Installed"
                        Type="integer"
                        Value="1"
                        KeyPath="yes" />
