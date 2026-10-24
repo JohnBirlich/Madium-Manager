@@ -1,0 +1,10 @@
+<Project Sdk="WixToolset.Sdk/4.0.6">
+  <PropertyGroup>
+    <OutputType>Package</OutputType>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <OutputName>MadiumManager-$(MsiVersion)-win-x64</OutputName>
+    <MsiVersion Condition="'$(MsiVersion)' == ''">0.1.0</MsiVersion>
+    <PublishDir Condition="'$(PublishDir)' == ''">..\..\artifacts\publish</PublishDir>
+    <DefineConstants>$(DefineConstants);PublishDir=$(PublishDir);MsiVersion=$(MsiVersion)</DefineConstants>
+  </PropertyGroup>
+</Project>

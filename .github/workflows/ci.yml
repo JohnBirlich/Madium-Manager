@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: 1
+  NUGET_XMLDOC_MODE: skip
+
+jobs:
+  build-test-package:
+    name: Windows build, tests and portable package
+    runs-on: windows-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: Directory.Packages.props
+
+      - name: Restore
+        run: dotnet restore MadiumManager.slnx
+
+      - name: Verify formatting
+        run: dotnet format MadiumManager.slnx --verify-no-changes --no-restore
+
+      - name: Build
+        run: dotnet build MadiumManager.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: >-
+          dotnet test MadiumManager.slnx
+          --configuration Release
+          --no-build
+          --collect "XPlat Code Coverage"
+          --logger "trx;LogFileName=tests.trx"
+          --results-directory artifacts/test-results
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: artifacts/test-results
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish self-contained win-x64
+        run: >-
+          dotnet publish src/MadiumManager.Desktop/MadiumManager.Desktop.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          --output artifacts/publish
+          -p:PublishSingleFile=true
+          -p:PublishTrimmed=false
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:DebugType=None
+          -p:DebugSymbols=false
+
+      - name: Create portable ZIP
+        shell: pwsh
+        run: Compress-Archive -Path "artifacts/publish/*" -DestinationPath "artifacts/MadiumManager-ci-win-x64.zip" -Force
+
+      - name: Build per-user MSI
+        run: >-
+          dotnet build packaging/MadiumManager.Installer/MadiumManager.Installer.wixproj
+          --configuration Release
+          -p:MsiVersion=0.1.0
+          "-p:PublishDir=$env:GITHUB_WORKSPACE\artifacts\publish"
+
+      - name: Collect CI MSI
+        shell: pwsh
+        run: |
+          $msi = Get-ChildItem "packaging/MadiumManager.Installer/bin/Release" -Recurse -Filter "*.msi" |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+          if ($null -eq $msi) { throw "MSI output was not found." }
+          Copy-Item $msi.FullName "artifacts/MadiumManager-ci-win-x64.msi"
+
+      - name: Upload portable package
+        uses: actions/upload-artifact@v7
+        with:
+          name: MadiumManager-ci-win-x64
+          path: artifacts/MadiumManager-ci-win-x64.zip
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload CI installer
+        uses: actions/upload-artifact@v7
+        with:
+          name: MadiumManager-ci-installer-win-x64
+          path: artifacts/MadiumManager-ci-win-x64.msi
+          if-no-files-found: error
+          retention-days: 14

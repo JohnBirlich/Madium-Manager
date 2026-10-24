@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="src/MadiumManager.Domain/MadiumManager.Domain.csproj" />
+  <Project Path="src/MadiumManager.Application/MadiumManager.Application.csproj" />
+  <Project Path="src/MadiumManager.Infrastructure/MadiumManager.Infrastructure.csproj" />
+  <Project Path="src/MadiumManager.Desktop/MadiumManager.Desktop.csproj" />
+  <Project Path="tests/MadiumManager.Tests/MadiumManager.Tests.csproj" />
+</Solution>
