@@ -96,6 +96,12 @@ jobs:
           if ($null -eq $msi) { throw "Previous MSI output was not found." }
           Copy-Item $msi.FullName "artifacts/upgrade-test/previous.msi"
 
+      - name: Clean previous MSI intermediates
+        run: >-
+          dotnet clean packaging/MadiumManager.Installer/MadiumManager.Installer.wixproj
+          --configuration Release
+          -p:MsiVersion=0.2.0
+
       - name: Build per-user MSI
         run: >-
           dotnet build packaging/MadiumManager.Installer/MadiumManager.Installer.wixproj
