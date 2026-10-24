@@ -4,16 +4,16 @@ namespace MadiumManager.Desktop.ViewModels;
 
 public static class StatusPalette
 {
-    public static readonly Brush Info = Freeze("#7EA4FF");
-    public static readonly Brush Success = Freeze("#43D7B0");
-    public static readonly Brush Warning = Freeze("#F2BE5C");
-    public static readonly Brush Danger = Freeze("#F17886");
-    public static readonly Brush Muted = Freeze("#8998B2");
-    public static readonly Brush InfoBackground = Freeze("#1B2D52");
-    public static readonly Brush SuccessBackground = Freeze("#123C38");
-    public static readonly Brush WarningBackground = Freeze("#40321B");
-    public static readonly Brush DangerBackground = Freeze("#44232E");
-    public static readonly Brush MutedBackground = Freeze("#202B3D");
+    public static readonly Brush Info = Freeze("#4F46E5");
+    public static readonly Brush Success = Freeze("#087F5B");
+    public static readonly Brush Warning = Freeze("#A15C00");
+    public static readonly Brush Danger = Freeze("#C4324B");
+    public static readonly Brush Muted = Freeze("#667085");
+    public static readonly Brush InfoBackground = Freeze("#EEF2FF");
+    public static readonly Brush SuccessBackground = Freeze("#E8F7F1");
+    public static readonly Brush WarningBackground = Freeze("#FFF4E0");
+    public static readonly Brush DangerBackground = Freeze("#FDECEF");
+    public static readonly Brush MutedBackground = Freeze("#F1F5F9");
 
     private static Brush Freeze(string color)
     {
