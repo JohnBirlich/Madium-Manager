@@ -41,19 +41,30 @@
                     Description="Account and Medium process manager"
                     WorkingDirectory="INSTALLFOLDER"
                     Icon="MadiumManagerIcon" />
-          <Shortcut Id="MadiumManagerUninstall"
-                    Directory="ApplicationProgramsFolder"
-                    Name="Удалить Madium Manager"
-                    Description="Удалить Madium Manager с этого компьютера"
-                    Target="[System64Folder]msiexec.exe"
-                    Arguments="/x [ProductCode]"
-                    Icon="MadiumManagerIcon" />
         </File>
         <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
         <RemoveFolder Id="RemoveStartMenuFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
         <RegistryValue Root="HKCU"
                        Key="Software\MadiumManager"
                        Name="Installed"
+                       Type="integer"
+                       Value="1"
+                       KeyPath="yes" />
+      </Component>
+
+      <Component Id="UninstallShortcut"
+                 Directory="ApplicationProgramsFolder"
+                 Guid="868E57BC-1DC7-4ACB-86FB-619426DFEDE1">
+        <Shortcut Id="MadiumManagerUninstall"
+                  Name="Удалить Madium Manager"
+                  Description="Удалить Madium Manager с этого компьютера"
+                  Target="[System64Folder]msiexec.exe"
+                  Arguments="/x [ProductCode]"
+                  WorkingDirectory="System64Folder"
+                  Icon="MadiumManagerIcon" />
+        <RegistryValue Root="HKCU"
+                       Key="Software\MadiumManager"
+                       Name="UninstallShortcut"
                        Type="integer"
                        Value="1"
                        KeyPath="yes" />
