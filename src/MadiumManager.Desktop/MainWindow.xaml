@@ -1,17 +1,147 @@
 <Window x:Class="MadiumManager.Desktop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Madium Manager"
-        Width="900"
-        Height="600"
-        WindowStartupLocation="CenterScreen">
-  <Grid Margin="32">
-    <StackPanel>
-      <TextBlock FontSize="28" FontWeight="SemiBold" Text="Madium Manager" />
-      <TextBlock Margin="0,12,0,0"
-                 Foreground="#555555"
-                 TextWrapping="Wrap"
-                 Text="Windows shell for the account coordinator and Medium-only process watchdog. Bind this view to MVVM view models; do not put process or network logic in code-behind." />
-    </StackPanel>
+        xmlns:models="clr-namespace:MadiumManager.Desktop.Models"
+        xmlns:views="clr-namespace:MadiumManager.Desktop.Views"
+        Title="Madium Manager — Control Center"
+        Width="1360"
+        Height="840"
+        MinWidth="1120"
+        MinHeight="700"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource WindowBrush}"
+        FontFamily="Segoe UI">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="232" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <Border Grid.Column="0" Background="{StaticResource SidebarBrush}">
+      <Grid Margin="16">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="*" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="8,8,8,32">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="44" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Border Width="40"
+                  Height="40"
+                  Background="{StaticResource AccentBrush}"
+                  CornerRadius="11">
+            <TextBlock HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       Text="MM" />
+          </Border>
+          <StackPanel Grid.Column="1" Margin="10,1,0,0">
+            <TextBlock FontSize="16" FontWeight="SemiBold" Text="Madium Manager" />
+            <TextBlock Style="{StaticResource MutedText}" FontSize="11" Text="CONTROL CENTER" />
+          </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="1">
+          <Button Command="{Binding NavigateCommand}"
+                  CommandParameter="{x:Static models:AppPage.Dashboard}"
+                  Content="▦   Обзор"
+                  Style="{StaticResource NavButton}" />
+          <Button Command="{Binding NavigateCommand}"
+                  CommandParameter="{x:Static models:AppPage.Accounts}"
+                  Content="◎   Аккаунты"
+                  Style="{StaticResource NavButton}" />
+          <Button Command="{Binding NavigateCommand}"
+                  CommandParameter="{x:Static models:AppPage.Events}"
+                  Content="≡   Журнал событий"
+                  Style="{StaticResource NavButton}" />
+          <Button Command="{Binding NavigateCommand}"
+                  CommandParameter="{x:Static models:AppPage.Settings}"
+                  Content="⚙   Настройки"
+                  Style="{StaticResource NavButton}" />
+        </StackPanel>
+
+        <Border Grid.Row="3"
+                Padding="13"
+                Background="#14233A"
+                CornerRadius="10">
+          <StackPanel>
+            <StackPanel Orientation="Horizontal">
+              <Ellipse Width="8" Height="8" Margin="0,0,8,0" Fill="#F2BE5C" />
+              <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="#F2BE5C" Text="ДЕМО-RUNTIME" />
+            </StackPanel>
+            <TextBlock Margin="0,7,0,0"
+                       Style="{StaticResource MutedText}"
+                       FontSize="11"
+                       TextWrapping="Wrap"
+                       Text="Процессы ОС не создаются. Все действия интерфейса доступны." />
+          </StackPanel>
+        </Border>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Column="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="34" />
+      </Grid.RowDefinitions>
+
+      <Border Grid.Row="0" Padding="28,24,28,20">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <StackPanel>
+            <TextBlock FontSize="29" FontWeight="SemiBold" Text="{Binding CurrentPageTitle}" />
+            <TextBlock Margin="0,7,0,0"
+                       Style="{StaticResource MutedText}"
+                       TextWrapping="Wrap"
+                       Text="{Binding CurrentPageSubtitle}" />
+          </StackPanel>
+          <Button Grid.Column="1"
+                  VerticalAlignment="Center"
+                  Padding="18,11"
+                  Command="{Binding StartNextCommand}"
+                  Content="▶  Запустить следующий"
+                  Style="{StaticResource PrimaryButton}" />
+        </Grid>
+      </Border>
+
+      <Grid Grid.Row="1" Margin="28,0,28,22">
+        <views:DashboardView Visibility="{Binding CurrentPage, Converter={StaticResource AppPageToVisibility}, ConverterParameter=Dashboard}" />
+        <views:AccountsView Visibility="{Binding CurrentPage, Converter={StaticResource AppPageToVisibility}, ConverterParameter=Accounts}" />
+        <views:EventsView Visibility="{Binding CurrentPage, Converter={StaticResource AppPageToVisibility}, ConverterParameter=Events}" />
+        <views:SettingsView Visibility="{Binding CurrentPage, Converter={StaticResource AppPageToVisibility}, ConverterParameter=Settings}" />
+      </Grid>
+
+      <Border Grid.Row="2"
+              BorderBrush="{StaticResource BorderBrush}"
+              BorderThickness="0,1,0,0"
+              Background="#0E1728">
+        <Grid Margin="28,0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <TextBlock VerticalAlignment="Center"
+                     Style="{StaticResource MutedText}"
+                     FontSize="11"
+                     Text="{Binding LastOperation}" />
+          <TextBlock Grid.Column="1"
+                     VerticalAlignment="Center"
+                     Style="{StaticResource MutedText}"
+                     FontSize="11"
+                     Text="Локальные данные · %LocalAppData%\MadiumManager" />
+        </Grid>
+      </Border>
+    </Grid>
   </Grid>
 </Window>

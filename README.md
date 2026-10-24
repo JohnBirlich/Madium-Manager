@@ -4,7 +4,9 @@ Windows desktop-менеджер аккаунтов и Medium-процессов
 
 ## Что уже заложено
 
-- C# / .NET 10, WPF Desktop shell, разделение Domain / Application / Infrastructure.
+- C# / .NET 10, полноценный WPF Control Center и разделение Domain / Application / Infrastructure.
+- Dashboard, account CRUD, поиск/фильтры, live-статусы, журнал, экспорт и настройки.
+- Интерактивный **явно обозначенный demo-runtime**: start/stop, server-side check, crash/reconnect без процессов ОС.
 - Async `MediumInjectorBridge` с default startup timeout **20 секунд**.
 - Автоматический reconnect **только через Medium.exe**, без запуска game executable.
 - Persistent `ServerStateSnapshot`: IP, port, account/session, source и timestamp.
@@ -16,12 +18,13 @@ Windows desktop-менеджер аккаунтов и Medium-процессов
 
 ## Важное ограничение каркаса
 
-Это архитектурный/тестируемый skeleton, а не готовая интеграция с конкретной версией Medium. Параметры в `MediumCliCommandBuilder` (`--account-id`, `--reconnect-ip`, `--reconnect-port`) являются примером контракта. Их необходимо заменить документированными параметрами Medium. `IMediumReadinessProbe` и `IAccountStatusChecker` требуют provider-specific реализаций; без них приложение не выдаёт ложных readiness/ban verdicts.
+Интерфейс полностью интерактивен, но текущий runtime демонстрационный и не создаёт процессы ОС — это постоянно обозначено в окне. Для реальной интеграции параметры `MediumCliCommandBuilder` (`--account-id`, `--reconnect-ip`, `--reconnect-port`) необходимо заменить документированными параметрами Medium, а `IMediumReadinessProbe` и `IAccountStatusChecker` — provider-specific реализациями. Демонстрационные статусы не выдаются за реальные readiness/ban verdicts.
 
 ## Документация
 
 - [Архитектура, Watchdog flow, server capture и OS-риски](docs/architecture.md)
 - [Локальная разработка, CI/CD, packaging и релизы](docs/development.md)
+- [Интерфейс и интерактивные сценарии](docs/user-interface.md)
 
 ## Быстрый старт
 
