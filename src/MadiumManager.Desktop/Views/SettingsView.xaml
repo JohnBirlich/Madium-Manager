@@ -1,0 +1,106 @@
+<UserControl x:Class="MadiumManager.Desktop.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="3*" />
+        <ColumnDefinition Width="2*" />
+      </Grid.ColumnDefinitions>
+
+      <Border Grid.Column="0" Margin="0,0,16,0" Style="{StaticResource Card}">
+        <StackPanel>
+          <TextBlock Style="{StaticResource CardTitleText}" Text="Medium и Watchdog" />
+          <TextBlock Margin="0,7,0,20"
+                     Style="{StaticResource MutedText}"
+                     TextWrapping="Wrap"
+                     Text="Параметры сохраняются для production-адаптера. В текущем демо они управляют сценариями, но не запускают исполняемые файлы." />
+
+          <TextBlock Margin="0,0,0,7" Text="Путь к Medium.exe" />
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0"
+                     Margin="0,0,9,0"
+                     Text="{Binding Settings.MediumExecutablePath, UpdateSourceTrigger=PropertyChanged}" />
+            <Button Grid.Column="1" Command="{Binding BrowseMediumCommand}" Content="Обзор…" />
+          </Grid>
+
+          <TextBlock Margin="0,16,0,7" Text="Рабочая директория" />
+          <TextBox Text="{Binding Settings.WorkingDirectory, UpdateSourceTrigger=PropertyChanged}" />
+
+          <UniformGrid Margin="0,16,0,0" Columns="2">
+            <StackPanel Margin="0,0,10,0">
+              <TextBlock Margin="0,0,0,7" Text="Startup timeout, секунды" />
+              <TextBox Text="{Binding Settings.StartupTimeoutSeconds, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+            <StackPanel Margin="10,0,0,0">
+              <TextBlock Margin="0,0,0,7" Text="Максимум автоперезапусков" />
+              <TextBox Text="{Binding Settings.MaxAutomaticRestarts, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+          </UniformGrid>
+
+          <CheckBox Margin="0,20,0,0"
+                    Content="Проверять server-side статус перед каждым запуском"
+                    IsChecked="{Binding Settings.CheckAccountsBeforeStart}" />
+          <TextBlock Margin="0,8,0,0"
+                     Style="{StaticResource MutedText}"
+                     FontSize="11"
+                     TextWrapping="Wrap"
+                     Text="Диапазон timeout: 3–300 с. Диапазон restart limit: 0–20. Значения нормализуются при сохранении." />
+
+          <Button Margin="0,22,0,0"
+                  HorizontalAlignment="Left"
+                  Padding="20,10"
+                  Command="{Binding SaveSettingsCommand}"
+                  Content="Сохранить настройки"
+                  Style="{StaticResource PrimaryButton}" />
+        </StackPanel>
+      </Border>
+
+      <StackPanel Grid.Column="1">
+        <Border Style="{StaticResource Card}">
+          <StackPanel>
+            <TextBlock Style="{StaticResource CardTitleText}" Text="Интерактивный демо-runtime" />
+            <TextBlock Margin="0,9,0,0"
+                       Style="{StaticResource MutedText}"
+                       TextWrapping="Wrap"
+                       Text="Позволяет проверить UX и state machine без Medium и без процессов ОС. Все статусы, reconnect и события генерируются локально и явно помечены как демо." />
+            <Border Margin="0,15,0,0" Padding="12" Background="#40321B" CornerRadius="8">
+              <TextBlock Foreground="#F2BE5C"
+                         FontSize="11"
+                         TextWrapping="Wrap"
+                         Text="Для реального запуска нужен документированный CLI/API контракт Medium. Текущая сборка не имитирует его наличие." />
+            </Border>
+            <TextBlock Margin="0,15,0,7" FontWeight="SemiBold" Text="Тестовые сценарии" />
+            <TextBlock Style="{StaticResource MutedText}" FontSize="11" TextWrapping="Wrap" Text="• demo.north / demo.beta — обычный запуск." />
+            <TextBlock Margin="0,6,0,0" Style="{StaticResource MutedText}" FontSize="11" TextWrapping="Wrap" Text="• banned.demo — аккаунт пропускается после проверки." />
+            <TextBlock Margin="0,6,0,0" Style="{StaticResource MutedText}" FontSize="11" TextWrapping="Wrap" Text="• Логин с «timeout» — ошибка readiness и переход к следующему." />
+            <TextBlock Margin="0,6,0,0" Style="{StaticResource MutedText}" FontSize="11" TextWrapping="Wrap" Text="• «↻» — падение и reconnect к сохранённому IP." />
+            <Button Margin="0,17,0,0"
+                    HorizontalAlignment="Left"
+                    Command="{Binding ResetDemoDataCommand}"
+                    Content="Восстановить демо-аккаунты"
+                    Style="{StaticResource DangerButton}" />
+          </StackPanel>
+        </Border>
+
+        <Border Margin="0,16,0,0" Style="{StaticResource Card}">
+          <StackPanel>
+            <TextBlock Style="{StaticResource CardTitleText}" Text="Локальное хранение" />
+            <TextBlock Margin="0,10,0,0"
+                       Style="{StaticResource MutedText}"
+                       TextWrapping="Wrap"
+                       Text="accounts.json — только имена, логины и заметки. settings.json — настройки приложения. Оба файла записываются атомарно в %LocalAppData%\MadiumManager." />
+            <TextBlock Margin="0,10,0,0"
+                       Style="{StaticResource MutedText}"
+                       TextWrapping="Wrap"
+                       Text="Пароли, токены и cookies не запрашиваются и не сохраняются этой формой." />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </Grid>
+  </ScrollViewer>
+</UserControl>

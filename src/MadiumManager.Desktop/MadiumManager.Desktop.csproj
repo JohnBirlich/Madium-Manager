@@ -11,5 +11,6 @@
     <ProjectReference Include="..\MadiumManager.Application\MadiumManager.Application.csproj" />
     <ProjectReference Include="..\MadiumManager.Domain\MadiumManager.Domain.csproj" />
     <ProjectReference Include="..\MadiumManager.Infrastructure\MadiumManager.Infrastructure.csproj" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
   </ItemGroup>
 </Project>

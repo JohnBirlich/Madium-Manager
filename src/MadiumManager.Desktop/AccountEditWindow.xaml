@@ -1,0 +1,77 @@
+<Window x:Class="MadiumManager.Desktop.AccountEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding Title}"
+        Width="500"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource WindowBrush}">
+  <Grid Margin="26">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <TextBlock Grid.Row="0"
+               FontSize="23"
+               FontWeight="SemiBold"
+               Text="{Binding Title}" />
+    <TextBlock Grid.Row="1"
+               Margin="0,7,0,20"
+               Style="{StaticResource MutedText}"
+               TextWrapping="Wrap"
+               Text="Сохраняются только метаданные. Токены и пароли в этой форме не используются." />
+
+    <TextBlock Grid.Row="2" Margin="0,0,0,7" Text="Отображаемое имя *" />
+    <TextBox Grid.Row="3"
+             Margin="0,0,0,16"
+             MaxLength="60"
+             Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}" />
+
+    <TextBlock Grid.Row="4" Margin="0,0,0,7" Text="Логин / внешний ID *" />
+    <TextBox Grid.Row="5"
+             Margin="0,0,0,16"
+             MaxLength="120"
+             Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" />
+
+    <TextBlock Grid.Row="6" Margin="0,0,0,7" Text="Заметка" />
+    <TextBox Grid.Row="7"
+             Height="92"
+             MaxLength="500"
+             AcceptsReturn="True"
+             TextWrapping="Wrap"
+             VerticalContentAlignment="Top"
+             Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" />
+
+    <TextBlock Grid.Row="8"
+               Margin="0,10,0,0"
+               Foreground="#F17886"
+               TextWrapping="Wrap"
+               Visibility="{Binding ErrorMessage, Converter={StaticResource NonEmptyStringToVisibility}}"
+               Text="{Binding ErrorMessage}" />
+
+    <StackPanel Grid.Row="9"
+                Margin="0,22,0,0"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal">
+      <Button Margin="0,0,10,0"
+              Padding="18,9"
+              Content="Отмена"
+              IsCancel="True" />
+      <Button Padding="18,9"
+              Content="Сохранить"
+              IsDefault="True"
+              Style="{StaticResource PrimaryButton}"
+              Click="Save_OnClick" />
+    </StackPanel>
+  </Grid>
+</Window>

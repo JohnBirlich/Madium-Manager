@@ -1,0 +1,93 @@
+<UserControl x:Class="MadiumManager.Desktop.Views.EventsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <Grid Grid.Row="0" Margin="0,0,0,16">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="320" />
+        <ColumnDefinition Width="190" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <TextBox Grid.Column="0"
+               Margin="0,0,12,0"
+               Text="{Binding EventSearchText, UpdateSourceTrigger=PropertyChanged}"
+               ToolTip="Поиск по событию или аккаунту" />
+      <ComboBox Grid.Column="1"
+                VerticalContentAlignment="Center"
+                ItemsSource="{Binding LogLevelOptions}"
+                SelectedItem="{Binding SelectedLogLevel}" />
+      <TextBlock Grid.Column="2"
+                 Margin="14,0,0,0"
+                 VerticalAlignment="Center"
+                 Style="{StaticResource MutedText}"
+                 Text="Фильтры применяются мгновенно" />
+      <StackPanel Grid.Column="3" Orientation="Horizontal">
+        <Button Margin="0,0,9,0" Command="{Binding ExportEventsCommand}" Content="⇩  Экспорт" />
+        <Button Command="{Binding ClearEventsCommand}" Content="Очистить" Style="{StaticResource DangerButton}" />
+      </StackPanel>
+    </Grid>
+
+    <Border Grid.Row="1" Padding="0" Style="{StaticResource Card}">
+      <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <ItemsControl ItemsSource="{Binding EventsView}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="16,13">
+                  <Grid>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="76" />
+                      <ColumnDefinition Width="112" />
+                      <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock VerticalAlignment="Top"
+                               Style="{StaticResource MutedText}"
+                               FontFamily="Consolas"
+                               FontSize="12"
+                               Text="{Binding TimeText}" />
+                    <Border Grid.Column="1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Padding="8,3"
+                            Background="#202B3D"
+                            CornerRadius="5">
+                      <TextBlock FontSize="10" Foreground="{Binding LevelBrush}" Text="{Binding LevelText}" />
+                    </Border>
+                    <StackPanel Grid.Column="2">
+                      <TextBlock TextWrapping="Wrap" Text="{Binding Message}" />
+                      <TextBlock Margin="0,4,0,0"
+                                 Style="{StaticResource MutedText}"
+                                 FontSize="11"
+                                 Visibility="{Binding AccountName, Converter={StaticResource NonEmptyStringToVisibility}}"
+                                 Text="{Binding AccountName}" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding HasEvents, Converter={StaticResource InverseBooleanToVisibility}}">
+          <TextBlock HorizontalAlignment="Center" FontSize="34" Foreground="#52617A" Text="≡" />
+          <TextBlock Margin="0,10,0,0" Style="{StaticResource MutedText}" Text="Событий пока нет" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <TextBlock Grid.Row="2"
+               Margin="0,12,0,0"
+               Style="{StaticResource MutedText}"
+               FontSize="11"
+               Text="В памяти хранятся последние 400 событий. Экспорт создаёт UTF-8 текстовый файл." />
+  </Grid>
+</UserControl>
