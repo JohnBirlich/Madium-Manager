@@ -1,0 +1,36 @@
+# .NET / Visual Studio
+.vs/
+.vscode/
+bin/
+obj/
+artifacts/
+TestResults/
+*.user
+*.suo
+*.nupkg
+*.snupkg
+*.trx
+
+# Local application data: never commit accounts, tokens, live logs or Medium binaries
+data/
+*.local.json
+appsettings.Local.json
+**/appsettings.*.local.json
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.log
+*.dmp
+Medium/
+Medium.exe
+
+# IDE / OS
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temporary installer files
+*.wixobj
+*.wixpdb
+*.cab

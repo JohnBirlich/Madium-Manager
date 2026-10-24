@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="Madium Manager"
+           Manufacturer="Madium Manager contributors"
+           Version="$(var.MsiVersion)"
+           UpgradeCode="BD3465D9-14FC-4F33-A6A0-41AA5F7621FF"
+           Scope="perUser">
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Madium Manager is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="MainFeature" Title="Madium Manager" Level="1">
+      <ComponentGroupRef Id="ApplicationComponents" />
+    </Feature>
+  </Package>
+
+  <Fragment>
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="INSTALLFOLDER" Name="Madium Manager" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="Madium Manager" />
+    </StandardDirectory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ApplicationComponents" Directory="INSTALLFOLDER">
+      <Component Id="MainExecutable" Guid="BB7DC4B4-3496-431A-A71B-E65F06BF9842">
+        <File Id="MadiumManagerExe" Source="$(var.PublishDir)\MadiumManager.exe">
+          <Shortcut Id="MadiumManagerStartMenu"
+                    Directory="ApplicationProgramsFolder"
+                    Name="Madium Manager"
+                    Description="Account and Medium process manager"
+                    WorkingDirectory="INSTALLFOLDER" />
+        </File>
+        <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveStartMenuFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <RegistryValue Root="HKCU"
+                       Key="Software\MadiumManager"
+                       Name="Installed"
+                       Type="integer"
+                       Value="1"
+                       KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

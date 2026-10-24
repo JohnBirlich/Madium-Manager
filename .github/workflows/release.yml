@@ -1,0 +1,109 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: 1
+  NUGET_XMLDOC_MODE: skip
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  build-test-release:
+    name: Test, package and publish GitHub Release
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: Directory.Packages.props
+
+      - name: Validate stable SemVer tag
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF_NAME -notmatch '^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$') {
+            throw "Tag '$env:GITHUB_REF_NAME' must be a stable SemVer tag such as v1.2.3."
+          }
+          $version = $env:GITHUB_REF_NAME.Substring(1)
+          "APP_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Restore
+        run: dotnet restore MadiumManager.slnx
+
+      - name: Build
+        run: dotnet build MadiumManager.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test MadiumManager.slnx --configuration Release --no-build
+
+      - name: Publish versioned self-contained win-x64
+        run: >-
+          dotnet publish src/MadiumManager.Desktop/MadiumManager.Desktop.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          --output artifacts/publish
+          "-p:Version=$env:APP_VERSION"
+          "-p:InformationalVersion=$env:APP_VERSION+$env:GITHUB_SHA"
+          -p:PublishSingleFile=true
+          -p:PublishTrimmed=false
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:DebugType=None
+          -p:DebugSymbols=false
+
+      - name: Create versioned ZIP
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path "artifacts/release" -Force | Out-Null
+          $zip = "artifacts/release/MadiumManager-$env:APP_VERSION-win-x64.zip"
+          Compress-Archive -Path "artifacts/publish/*" -DestinationPath $zip -Force
+
+      - name: Build per-user MSI
+        run: >-
+          dotnet build packaging/MadiumManager.Installer/MadiumManager.Installer.wixproj
+          --configuration Release
+          "-p:MsiVersion=$env:APP_VERSION"
+          "-p:PublishDir=$env:GITHUB_WORKSPACE\artifacts\publish"
+
+      - name: Collect MSI
+        shell: pwsh
+        run: |
+          $msi = Get-ChildItem "packaging/MadiumManager.Installer/bin/Release" -Recurse -Filter "*.msi" |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+          if ($null -eq $msi) { throw "MSI output was not found." }
+          Copy-Item $msi.FullName "artifacts/release/$($msi.Name)"
+
+      # Insert Authenticode/Azure Trusted Signing here before checksumming public builds.
+      - name: Generate SHA-256 checksums
+        shell: pwsh
+        run: |
+          $lines = foreach ($file in Get-ChildItem "artifacts/release" -File) {
+            $hash = (Get-FileHash $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            "$hash  $($file.Name)"
+          }
+          $lines | Set-Content "artifacts/release/SHA256SUMS.txt" -Encoding utf8
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem "artifacts/release" -File | ForEach-Object { $_.FullName }
+          gh release create "$env:GITHUB_REF_NAME" $files --title "Madium Manager $env:APP_VERSION" --generate-notes
+          if ($LASTEXITCODE -ne 0) { throw "gh release create failed with exit code $LASTEXITCODE." }
