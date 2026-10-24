@@ -34,7 +34,7 @@ dotnet build packaging/MadiumManager.Installer/MadiumManager.Installer.wixproj `
 
 Workflow `.github/workflows/ci.yml` запускается на:
 
-- `push` в `main`;
+- `push` в любую рабочую ветку (включая `main`);
 - Pull Request в `main`;
 - ручной `workflow_dispatch` для любой выбранной ветки.
 
