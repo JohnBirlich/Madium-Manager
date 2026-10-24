@@ -47,7 +47,8 @@ Windows job выполняет:
 5. unit-тесты с TRX и coverage;
 6. self-contained `win-x64` publish;
 7. ZIP packaging и сборку per-user MSI;
-8. загрузку test results, ZIP и MSI как GitHub Actions artifacts.
+8. MSI lifecycle smoke test: установка предыдущей версии, upgrade, проверка удаления старого ProductCode и последующее удаление;
+9. загрузку test results, ZIP и MSI как GitHub Actions artifacts.
 
 Job имеет read-only repository permissions и timeout. Новый push в ту же ветку отменяет устаревший CI run.
 

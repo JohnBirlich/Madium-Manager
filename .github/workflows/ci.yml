@@ -80,6 +80,22 @@ jobs:
         shell: pwsh
         run: Compress-Archive -Path "artifacts/publish/*" -DestinationPath "artifacts/MadiumManager-ci-win-x64.zip" -Force
 
+      - name: Build previous MSI for lifecycle test
+        run: >-
+          dotnet build packaging/MadiumManager.Installer/MadiumManager.Installer.wixproj
+          --configuration Release
+          -p:MsiVersion=0.2.0
+          "-p:PublishDir=$env:GITHUB_WORKSPACE\artifacts\publish"
+
+      - name: Stage previous MSI
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path "artifacts/upgrade-test" -Force | Out-Null
+          $msi = Get-ChildItem "packaging/MadiumManager.Installer/bin/Release" -Recurse -Filter "MadiumManager-0.2.0-*.msi" |
+            Select-Object -First 1
+          if ($null -eq $msi) { throw "Previous MSI output was not found." }
+          Copy-Item $msi.FullName "artifacts/upgrade-test/previous.msi"
+
       - name: Build per-user MSI
         run: >-
           dotnet build packaging/MadiumManager.Installer/MadiumManager.Installer.wixproj
@@ -95,6 +111,13 @@ jobs:
             Select-Object -First 1
           if ($null -eq $msi) { throw "MSI output was not found." }
           Copy-Item $msi.FullName "artifacts/MadiumManager-ci-win-x64.msi"
+
+      - name: Test MSI upgrade and uninstall
+        shell: pwsh
+        run: >-
+          & eng/Test-MsiLifecycle.ps1
+          -PreviousMsi "artifacts/upgrade-test/previous.msi"
+          -CurrentMsi "artifacts/MadiumManager-ci-win-x64.msi"
 
       - name: Upload portable package
         uses: actions/upload-artifact@v7
